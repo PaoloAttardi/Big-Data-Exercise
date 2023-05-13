@@ -75,11 +75,11 @@ encoder.fit(df[['weather_main']])
 encoder_df = pd.DataFrame(encoder.transform(df[['weather_main']]).toarray())
 # one_hot_encoded_data = pd.get_dummies(df, columns = ['weather_main'])
 df = df.join(encoder_df)
-df.drop(['weather_main'],axis=1, inplace=True)
+# df.drop(['weather_main'],axis=1, inplace=True)
 df = df.dropna()
 
-y = df.drop(['temp', 'temp_min', 'temp_max', 'pressure', 'humidity', 'wind_speed', 'wind_deg', 'rain_1h', 'rain_3h', 'snow_3h'], axis=1)
-X = df.drop([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], axis=1)
+y = df['weather_main']
+X = df.drop(['weather_main'], axis=1)
 X_train, X_test, y_train, y_test = train_test_split(X, y , test_size=1/3)
 tree = DecisionTreeClassifier()
 tree.fit(X_train, y_train)
@@ -88,11 +88,12 @@ test_prediction = tree.predict(X_test)
 train_prediction = tree.predict(X_train)
 # print(accuracy_score(y_test, test_prediction), accuracy_score(y_train, train_prediction))
 
-'''logreg = LogisticRegression(random_state=0, multi_class='ovr', solver='saga')
+logreg = LogisticRegression()
 logreg.fit(X_train, y_train)
 
-prediction1 = logreg.predict(X_test)
-print(accuracy_score(y_test, prediction1))'''
+test_pred1 = logreg.predict(X_test)
+train_pred1 = logreg.predict(X_train)
+print(accuracy_score(y_test, test_pred1), accuracy_score(y_train, train_pred1))
 
 # Confrontare l’accuratezza ottenuta nel punto precedente con l’accuratezza che si ottiene con un una 10 Fold cross validation
 scores = cross_val_score(tree, X, y, cv=10)
